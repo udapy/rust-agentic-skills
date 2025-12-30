@@ -1,0 +1,22 @@
+{
+  "name": "rust-agentic-skills",
+  "owner": "Uday Phalak",
+  "metadata": { 
+      "description": "Rust coding specialists using RPI methodology.", 
+      "version": "1.0.0" 
+  },
+  "plugins": [
+    {
+      "name": "Rust Kernel",
+      "description": "Core Rust capabilities",
+      "source": "local",
+      "path": "skills/rust-core"
+    },
+    {
+       "name": "Lint Hunter",
+       "description": "Borrow checker debugging",
+       "source": "local",
+       "path": "skills/lint-hunter"
+    }
+  ]
+}

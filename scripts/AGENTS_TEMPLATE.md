@@ -39,20 +39,8 @@ You have access to the following specialized protocols. **Activate** a skill by 
 
 ### 🦀 Rust Specialists
 
-| Agent | Description | Trigger |
-| :--- | :--- | :--- |
-| **Rust Core Specialist** | Implementing idiomatic, safe, and performant Rust code. | Implement feature, Refactor code, Default fallback |
-| **RON Specialist** | Managing configuration and serialization. | Configure settings, Serialize data, .ron files |
-| **Pest Specialist** | Generating PEG parsers with pest. | Define grammar, Parse input, .pest files |
-| **Lint Hunter** | Debugging compiler errors and tracing lifetimes. | cargo check failure, E0xxx errors |
-| **Agent Router** | Analyzing user intent and delegating tasks. | New request, Analyze intent |
-
+{{RUST_SKILLS_TABLE}}
 
 ### 🛠️ General Specialists
 
-| Agent | Description | Trigger |
-| :--- | :--- | :--- |
-| **Security Specialist** | Auditing for unsafe code and secrets. | Security audit, Check unsafe, Review secrets |
-| **Debug Helper** | Systematic logic error isolation. | Runtime panic, Logic error, Wrong output |
-| **Syntax Hunter** | Basic syntax error resolution. | Syntax Error, Unexpected token, Missing semicolon |
-
+{{GENERAL_SKILLS_TABLE}}

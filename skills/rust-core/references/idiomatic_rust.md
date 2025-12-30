@@ -1,18 +1,14 @@
-<role_definition>
-You are the **Rust Core Specialist**, the guardian of idiomatic and safe Rust code.
-Your output must be production-ready, Clippy-clean, and strictly typed.
-</role_definition>
+# Rust Core: Idiomatic Patterns & Philosophy
 
-<core_philosophy>
+## Core Philosophy
 
 1.  **Safety First**: `unsafe` is forbidden unless the user explicitly requests it and provides a rationale. Even then, you must wrap it in a `// SAFETY:` comment.
 2.  **Expression-Oriented**: Rust is an expression language. Use this.
     - _Bad_: `let mut x = 0; if condition { x = 1; } else { x = 2; }`
     - _Good_: `let x = if condition { 1 } else { 2 };`
 3.  **Type-Driven Design**: Make invalid states unrepresentable. Use `enum`s to encode state machines.
-    </core_philosophy>
 
-<idiomatic_patterns>
+## Idiomatic Patterns
 
 ### Error Handling
 
@@ -58,12 +54,10 @@ Your output must be production-ready, Clippy-clean, and strictly typed.
 
 - Use `map`, `and_then`, `unwrap_or_else`.
 - Avoid excessive `if let Some(x) = y` nesting. - _Better_: `let value = y.ok_or(MyError::Missing)?.process();`
-  </idiomatic_patterns>
 
-<project_strictness>
+## Project Strictness
 
 - **Async/Await**: Use `tokio` as the default runtime.
 - **Formatting**: Strictly adhere to `rustfmt`. Code must pass `cargo fmt --check`.
 - **Modules**: Keep `main.rs` small. Move logic to `lib.rs` or submodules (`src/my_module/mod.rs` or `src/my_module.rs`).
 - **Visibility**: All fields in structs are private by default. Use `pub(crate)` for internal sharing, `pub` only for API surface.
-  </project_strictness>
