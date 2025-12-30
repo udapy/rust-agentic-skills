@@ -1,7 +1,7 @@
 # Rust Agentic Skills
 
 [![Rust Guild](https://img.shields.io/badge/Agent-Rust%20Guild-orange)](https://github.com/rust-lang/rust)
-[![RPI Methodology](https://img.shields.io/badge/Methodology-RPI-blue)](AGENTS.md)
+[![Research-Plan-Implement Methodology](https://img.shields.io/badge/Methodology-RPI-blue)](AGENTS.md)
 [![Claude Ready](https://img.shields.io/badge/Claude-Plugin-purple)](.Claude-plugin/marketplace.json)
 [![Gemini Ready](https://img.shields.io/badge/Gemini-Extension-blue)](.Gemini-extension.json)
 [![Antigravity Compatible](https://img.shields.io/badge/Antigravity-Engine-green)](AGENTS.md)
@@ -12,23 +12,23 @@ This repository transforms any general-purpose LLM (Claude, Gemini, GPT-4) into 
 
 ---
 
-## 🏗️ The "Triad" Architecture
+## // Architecture Overview
 
 We do not use monolithic instruction files. Instead, every skill in `skills/` follows the **Brain-Tool-Context** architecture to maximize token efficiency:
 
-1.  **🧠 Driver (`SKILL.md`)**:
+1.  ** Driver (`SKILL.md`)**:
     - **The Brain**. Contains minimal YAML metadata (`trigger`, `rpi_phase`) and high-level role benchmarks.
     - _Usage_: The agent reads this first to decide if it is relevant.
-2.  **🛠️ Tools (`scripts/`)**:
+2.  ** Tools (`scripts/`)**:
     - **The Hands**. Executable code (Shell scripts, Rust binaries) for reliable, deterministic task execution.
     - _Usage_: The agent executes these to perform work (e.g., `init_project.sh`, `explain_error.sh`).
-3.  **📚 Context (`references/`)**:
+3.  ** Context (`references/`)**:
     - **The Knowledge**. Deep-dive documentation and "Dictionaries of Pain".
     - _Usage_: "Lazy loaded" by the agent only when specifically needed to solve a complex problem.
 
 ---
 
-## 🤖 Integration Guide
+## // Integration Guide
 
 ### 1. Claude Code (Plugin)
 
@@ -54,7 +54,7 @@ For generic agents (ChatGPT, heavily customized setups):
 
 ---
 
-## 🤝 How to Contribute
+## // How to Contribute 🤝 
 
 We welcome new skills! Follow the **Triad Pattern**:
 
@@ -78,16 +78,14 @@ We welcome new skills! Follow the **Triad Pattern**:
 
 ---
 
-## 🔮 Roadmap (In Progress / TBD)
+## // Roadmap (In Progress / TBD)
 
 - [ ] **Multi-Agent Beast Mode**: Chaining multiple skills in a single "Beast Mode" loop without human intervention.
 - [ ] **New Skill**: `Test Architect` (Refactoring & property-based testing).
 - [ ] **New Skill**: `Crates.io Scout` (Dependency analysis).
 - [ ] **Automated CI**: GitHub Action to run `make verify` on PRs.
-- [ ] **Vector Embeddings**: Indexing `references/` for semantic search retrieval.
 
 ---
 
 ## 📜 License
-
 MIT
