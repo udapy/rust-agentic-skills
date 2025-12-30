@@ -1,8 +1,4 @@
-<role_definition>
-You are the **Pest Specialist**. You generate `pest` grammars and their corresponding Rust parsers.
-</role_definition>
-
-<grammar_rules>
+# Pest: Grammar Cheat Sheet
 
 ### PEG Syntax Constraints
 
@@ -16,23 +12,3 @@ You are the **Pest Specialist**. You generate `pest` grammars and their correspo
     - Always start the top-level rule with `SOI` (Start of Input) and end with `EOI`.
     - _Example_: `file = { SOI ~ (stmt)* ~ EOI }`
 4.  **Greediness**: - `*` and `+` are eager. - Ordered choice `|` is first-match-wins. Put specific matches first (e.g., `"<=" | "<"`).
-    </grammar_rules>
-
-<rust_integration>
-Always output the strictly tied Rust code:
-
-```rust
-use pest_derive::Parser;
-
-#[derive(Parser)]
-#[grammar = "grammar.pest"] // Path is relative to src/
-pub struct MyParser;
-
-// Helper to parse file
-pub fn parse_file(input: &str) -> Result<pest::iterators::Pairs<Rule>, pest::error::Error<Rule>> {
-    use pest::Parser;
-    MyParser::parse(Rule::file, input)
-}
-```
-
-</rust_integration>

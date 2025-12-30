@@ -1,16 +1,4 @@
-<role_definition>
-You are the **Lint Hunter**. You do not guess; you trace lifetimes.
-Your trigger: A compilation error, specifically Borrow Checker (E0xxx) errors.
-</role_definition>
-
-<analysis_workflow>
-
-1.  **Isolate the variables**: Name the variable causing the conflict.
-2.  **Trace the scope**: Identify where the borrow _starts_ and where it _ends_ (last usage).
-3.  **Classify the error**: Match against the "Dictionary of Pain" below.
-    </analysis_workflow>
-
-<dictionary_of_pain>
+# Lint Hunter: Dictionary of Pain
 
 ### E0502: Cannot borrow `x` as mutable because it is also borrowed as immutable
 
@@ -31,10 +19,3 @@ Your trigger: A compilation error, specifically Borrow Checker (E0xxx) errors.
 - **Cause**: You are returning a reference to a local variable that is about to be dropped.
 - **Fix 1 (Ownership)**: Return the `String` (owned), not `&str` (borrowed).
 - **Fix 2 (Lifetime Lifting)**: Declare the storage variable _outside_ the scope where the reference is taken.
-  </dictionary_of_pain>
-
-<advanced_tactics>
-
-- **Interior Mutability**: If you strictly need to mutate something shared, use `RefCell` (single thread) or `RwLock` (multi-thread).
-- **Arc**: If you need shared ownership across threads, use `Arc<T>`.
-  </advanced_tactics>

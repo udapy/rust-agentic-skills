@@ -1,0 +1,7 @@
+{
+  "name": "Rust Guild Skills",
+  "version": "1.0.0",
+  "description": "Agentic tools for Rust development adhering to RPI methodology.",
+  "instructions": "AGENTS.md",
+  "entryPoint": "skills/"
+}
