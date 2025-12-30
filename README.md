@@ -3,7 +3,7 @@
 [![Rust Guild](https://img.shields.io/badge/Agent-Rust%20Guild-orange)](https://github.com/rust-lang/rust)
 [![Research-Plan-Implement Methodology](https://img.shields.io/badge/Methodology-RPI-blue)](AGENTS.md)
 [![Claude Ready](https://img.shields.io/badge/Claude-Plugin-purple)](.Claude-plugin/marketplace.json)
-[![Gemini Ready](https://img.shields.io/badge/Gemini-Extension-blue)](.Gemini-extension.json)
+[![Gemini Extension](https://img.shields.io/badge/Gemini-Extension-blue)](gemini-extension.json)
 [![Antigravity Compatible](https://img.shields.io/badge/Antigravity-Engine-green)](AGENTS.md)
 
 **A modular, constraint-based skill set for Autonomous AI coding agents.**
