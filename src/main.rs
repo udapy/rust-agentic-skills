@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
-use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct JsonRpcRequest {
@@ -25,7 +24,7 @@ async fn main() -> anyhow::Result<()> {
     eprintln!("Starting Rust Guardian MCP Server...");
 
     let stdin = tokio::io::stdin();
-    let mut reader = BufReader::new(stdin);
+    let reader = BufReader::new(stdin);
     let mut stdout = tokio::io::stdout();
 
     let mut lines = reader.lines();
