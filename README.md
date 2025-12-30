@@ -16,13 +16,13 @@ This repository transforms any general-purpose LLM (Claude, Gemini, GPT-4) into 
 
 We do not use monolithic instruction files. Instead, every skill in `skills/` follows the **Brain-Tool-Context** architecture to maximize token efficiency:
 
-1.  ** Driver (`SKILL.md`)**:
+1.  **Driver (`SKILL.md`)**:
     - **The Brain**. Contains minimal YAML metadata (`trigger`, `rpi_phase`) and high-level role benchmarks.
     - _Usage_: The agent reads this first to decide if it is relevant.
-2.  ** Tools (`scripts/`)**:
+2.  **Tools (`scripts/`)**:
     - **The Hands**. Executable code (Shell scripts, Rust binaries) for reliable, deterministic task execution.
     - _Usage_: The agent executes these to perform work (e.g., `init_project.sh`, `explain_error.sh`).
-3.  ** Context (`references/`)**:
+3.  **Context (`references/`)**:
     - **The Knowledge**. Deep-dive documentation and "Dictionaries of Pain".
     - _Usage_: "Lazy loaded" by the agent only when specifically needed to solve a complex problem.
 
