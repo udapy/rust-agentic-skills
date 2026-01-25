@@ -7,7 +7,7 @@
   "mcpServers": {
     "rust-guardian": {
       "command": "cargo",
-      "args": ["run", "--release", "--quiet"],
+      "args": ["run", "--release", "--bin", "rust-agentic-skills", "--quiet"],
       "env": {
         "RUST_LOG": "error"
       },

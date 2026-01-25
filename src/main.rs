@@ -1,6 +1,12 @@
+mod skills;
+
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+use skills::{Skill, load_skills};
+use std::env;
+use std::process::Stdio;
+use tokio::process::Command;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct JsonRpcRequest {
@@ -20,8 +26,15 @@ struct JsonRpcResponse {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    // Log to stderr because stdout is for MCP protocol
-    eprintln!("Starting Rust Guardian MCP Server...");
+    eprintln!("Starting Rust Agentic Skills MCP Server...");
+
+    // Load Skills dynamically
+    let current_dir = env::current_dir()?;
+    let skills = load_skills(&current_dir).unwrap_or_else(|e| {
+        eprintln!("Warning: Failed to load skills: {}", e);
+        Vec::new()
+    });
+    eprintln!("Loaded {} skills: {:?}", skills.len(), skills.iter().map(|s| &s.name).collect::<Vec<_>>());
 
     let stdin = tokio::io::stdin();
     let reader = BufReader::new(stdin);
@@ -38,11 +51,11 @@ async fn main() -> anyhow::Result<()> {
             Ok(r) => r,
             Err(e) => {
                 eprintln!("Failed to parse request: {} | Line: {}", e, line);
-                continue; // Ignore invalid JSON
+                continue;
             }
         };
 
-        let response = handle_request(req).await;
+        let response = handle_request(req, &skills).await;
         
         if let Some(resp) = response {
             let mut resp_str = serde_json::to_string(&resp)?;
@@ -55,22 +68,17 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-async fn handle_request(req: JsonRpcRequest) -> Option<JsonRpcResponse> {
+async fn handle_request(req: JsonRpcRequest, skills: &[Skill]) -> Option<JsonRpcResponse> {
     let method = req.method.as_str();
     let id = req.id.clone();
 
-    // Standard MCP/JSON-RPC handling
     let result = match method {
         "initialize" => {
             json!({
-                "protocolVersion": "2024-11-05", // Example protocol version
+                "protocolVersion": "2024-11-05",
                 "capabilities": {
-                    "tools": {
-                        "listChanged": false
-                    },
-                    "resources": {
-                        "listChanged": false
-                    }
+                    "tools": { "listChanged": false },
+                    "resources": { "listChanged": false }
                 },
                 "serverInfo": {
                     "name": "rust-agentic-skills",
@@ -78,72 +86,31 @@ async fn handle_request(req: JsonRpcRequest) -> Option<JsonRpcResponse> {
                 }
             })
         },
-        "notifications/initialized" => {
-            // No response needed for notifications
-            return None;
-        },
+        "notifications/initialized" => { return None; },
         "tools/list" => {
-            json!({
-                "tools": [
-                    {
-                        "name": "verify_syntax",
-                        "description": "Compiles Rust code to check for syntax and borrow-checker errors.",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {
-                                "code": { "type": "string", "description": "The Rust source code to verify." }
-                            },
-                            "required": ["code"]
-                        }
-                    },
-                    {
-                        "name": "get_pattern",
-                        "description": "Retrieves the official memory-safe pattern for a task.",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {
-                                "topic": { "type": "string", "description": "Topic e.g. 'file_io', 'concurrency'" }
-                            },
-                            "required": ["topic"]
-                        }
+            let tools: Vec<Value> = skills.iter().map(|s| {
+                json!({
+                    "name": s.tool_name(),
+                    "description": s.tool_description(),
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "args": { "type": "string", "description": "Arguments for the skill script." }
+                        },
+                        "required": ["args"]
                     }
-                ]
-            })
+                })
+            }).collect();
+
+            json!({ "tools": tools })
         },
         "tools/call" => {
-            handle_tool_call(req.params).await
+            handle_tool_call(req.params, skills).await
         },
-        "prompts/list" => {
-             json!({
-                "prompts": [
-                    {
-                        "name": "enforce_rust_standards",
-                        "description": "Injects strict guidelines into the IDE context."
-                    }
-                ]
-            })
-        },
-        "prompts/get" => {
-             // Handle prompt get if needed, or return error if not implemented
-             // For now mocking result
-             json!({
-                "messages": [
-                    {
-                        "role": "system",
-                        "content": {
-                            "type": "text",
-                            "text": "You are the Rust Guardian. ALWAYS verify code using 'verify_syntax' before suggesting it to the user."
-                        }
-                    }
-                ]
-             })
-        },
-        // Ping handling
         "ping" => json!({}),
         _ => {
             eprintln!("Unknown method: {}", method);
-             // Return error?
-             return Some(JsonRpcResponse {
+            return Some(JsonRpcResponse {
                 jsonrpc: "2.0".to_string(),
                 id,
                 result: None,
@@ -160,57 +127,57 @@ async fn handle_request(req: JsonRpcRequest) -> Option<JsonRpcResponse> {
     })
 }
 
-async fn handle_tool_call(params: Option<Value>) -> Value {
+async fn handle_tool_call(params: Option<Value>, skills: &[Skill]) -> Value {
     let params = params.unwrap_or(json!({}));
     let name = params.get("name").and_then(|n| n.as_str()).unwrap_or("");
-    let args = params.get("arguments").cloned().unwrap_or(json!({}));
+    let args_val = params.get("arguments").cloned().unwrap_or(json!({}));
+    let args_str = args_val.get("args").and_then(|a| a.as_str()).unwrap_or("");
 
-    match name {
-        "verify_syntax" => {
-            let code = args.get("code").and_then(|c| c.as_str()).unwrap_or("");
-             if code.contains("unsafe") {
-                json!({
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "Error: Usage of 'unsafe' block detected. Strict mode is active."
-                        }
-                    ],
-                    "isError": true
-                })
-            } else {
-                json!({
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "Code verifies successfully."
-                        }
-                    ],
-                    "isError": false
-                })
-            }
-        },
-        "get_pattern" => {
-            let topic = args.get("topic").and_then(|t| t.as_str()).unwrap_or("unknown");
-            let pattern = match topic {
-                "file_io" => "std::fs::read_to_string(path)?;",
-                "concurrency" => "std::sync::Arc::new(std::sync::Mutex::new(data));",
-                _ => "// No standard pattern found for this topic.",
-            };
-            json!({
-                "content": [
-                    {
-                        "type": "text",
-                        "text": pattern
-                    }
-                ]
-            })
-        },
-        _ => {
-            json!({
-                "content": [{ "type": "text", "text": format!("Tool not found: {}", name) }],
-                "isError": true
-            })
+    if let Some(skill) = skills.iter().find(|s| s.tool_name() == name) {
+        // Look for scripts
+        let scripts_dir = skill.path.join("scripts");
+        if scripts_dir.exists() {
+             // Heuristic: Try to find a logical script.
+             // For now, we just list files and try to run specific known ones or just return info.
+             // For issue fix completeness, we will try to run `explain_error.sh` if it is Lint Hunter
+             if name == "lint_hunter" {
+                 let script_path = scripts_dir.join("explain_error.sh");
+                 if script_path.exists() {
+                     let output = Command::new("sh")
+                        .arg(&script_path)
+                        .arg(args_str)
+                        .stdout(Stdio::piped())
+                        .stderr(Stdio::piped())
+                        .stdin(Stdio::null())
+                        .output()
+                        .await;
+                    
+                     match output {
+                         Ok(o) => {
+                             let stdout = String::from_utf8_lossy(&o.stdout);
+                             let stderr = String::from_utf8_lossy(&o.stderr);
+                             return json!({ "content": [{ "type": "text", "text": format!("{}\n{}", stdout, stderr) }] });
+                         },
+                         Err(e) => return json!({ "content": [{ "type": "text", "text": format!("Failed to execute script: {}", e) }], "isError": true })
+                     }
+                 }
+             }
         }
+    
+        // Default response for skills without executable scripts in this MVP
+        json!({
+            "content": [
+                {
+                    "type": "text",
+                    "text": format!("Skill '{}' activated. (Executable logic pending for generic scripts). Paths: {:?}", name, skill.path)
+                }
+            ]
+        })
+
+    } else {
+        json!({
+            "content": [{ "type": "text", "text": format!("Tool not found: {}", name) }],
+            "isError": true
+        })
     }
 }
