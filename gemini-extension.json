@@ -1,7 +1,7 @@
 {
   "name": "rust-agentic-skills",
   "id": "rust-agentic-skills",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A 'Rust Guardian' agent that enforces memory safety and coding standards.",
   "publisher": "udapy", 
   "mcpServers": {

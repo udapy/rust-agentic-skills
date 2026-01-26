@@ -40,12 +40,28 @@ This repository is a compliant Claude Plugin.
 
 ### 2. Gemini CLI (Extension)
 
-Compatible with the Gemini CLI tool integration.
+Compatible with the Gemini CLI tool via the **Model Context Protocol (MCP)**. This repo provides a dynamic server that auto-discovers skills.
 
-1.  Register the extension using `.Gemini-extension.json`.
-2.  **Result**: The router skill becomes the entry point for "Rust Guild" commands.
+1.  **Link Extension**:
+    ```bash
+    gemini extensions link .
+    ```
+2.  **Activate**:
+    ```bash
+    gemini context set rust-agentic-skills
+    ```
+3.  **Result**: The `rust-agentic-skills` server starts up, reads your `skills/` directory, and dynamically routes your requests to the appropriate skill (e.g., "Lint Hunter").
 
 ### 3. Manual / Custom Agents
+
+**Running the MCP Server Manually:**
+You can run the server directly to verify standard JSON-RPC communication:
+
+```bash
+cargo run --release --bin rust-agentic-skills
+```
+
+_(Expects JSON-RPC messages on stdin)_
 
 For generic agents (ChatGPT, heavily customized setups):
 
@@ -54,7 +70,7 @@ For generic agents (ChatGPT, heavily customized setups):
 
 ---
 
-## // How to Contribute 🤝 
+## // How to Contribute 🤝
 
 We welcome new skills! Follow the **Triad Pattern**:
 
@@ -88,4 +104,5 @@ We welcome new skills! Follow the **Triad Pattern**:
 ---
 
 ## 📜 License
+
 MIT
