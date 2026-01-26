@@ -1,7 +1,7 @@
+use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::{Path, PathBuf};
-use anyhow::{Context, Result};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Skill {
@@ -21,7 +21,7 @@ impl Skill {
 
     pub fn tool_description(&self) -> String {
         format!(
-            "{} [Trigger: {:?}] [Phase: {}]", 
+            "{} [Trigger: {:?}] [Phase: {}]",
             self.description, self.trigger, self.rpi_phase
         )
     }
