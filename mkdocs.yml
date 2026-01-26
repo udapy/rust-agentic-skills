@@ -16,3 +16,25 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+
+nav:
+  - Home: index.md
+  - Agents: AGENTS.md
+  - Skills:
+      - Overview: skills/index.md
+      - General Debug: skills/general-debug/SKILL.md
+      - General Security: skills/general-security/SKILL.md
+      - General Syntax: skills/general-syntax/SKILL.md
+      - Lint Hunter:
+          - Skill: skills/lint-hunter/SKILL.md
+          - Dictionary of Pain: skills/lint-hunter/references/dictionary_of_pain.md
+      - Pest Specialist:
+          - Skill: skills/pest-specialist/SKILL.md
+          - Grammar Cheat Sheet: skills/pest-specialist/references/grammar_cheat_sheet.md
+      - RON Specialist: skills/ron-specialist/SKILL.md
+      - Router: skills/router/SKILL.md
+      - Rust Core:
+          - Skill: skills/rust-core/SKILL.md
+          - Idiomatic Rust: skills/rust-core/references/idiomatic_rust.md
+  - Contributing: CONTRIBUTING.md
+  - Development: DEVELOPMENT.md
