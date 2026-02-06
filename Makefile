@@ -23,3 +23,20 @@ verify:
 clean:
 	cargo clean
 	rm -f generate_agents_md
+
+# Docker targets
+docker-build:
+	docker build -t rust-agentic-skills .
+
+docker-run:
+	@echo "Starting MCP Server in Docker (Interactive Mode)..."
+	@echo "Type JSON-RPC messages to interact."
+	docker run -i --rm rust-agentic-skills
+
+# Logs info (MCP server writes to stderr, so they appear in console during docker-run)
+logs:
+	@echo "To view logs locally during development:"
+	@echo "  cargo run --release 2>&1 | grep -v 'JsonRpcResponse'"
+	@echo ""
+	@echo "In Docker, logs (stderr) are printed to the console alongside stdout."
+
