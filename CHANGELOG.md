@@ -5,14 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.1] - 2026-01-25
+## [1.1.2] - 2026-02-06
 
 ### Fixed
 
-- **PATH Resolution**: Fixed `run_rust_guardian.sh` to robustly locate `cargo` in restricted environments (like Gemini CLI) by explicitly checking and adding `~/.cargo/bin` to `PATH`.
-- **Gemini Config**: Removed restrictive `env` block in `gemini-extension.json` to allow environment inheritance.
+- **Protocol Violation**: Fixed stdout pollution by redirecting build and application logs to stderr (`bootstrap.sh`, `env_logger`).
+- **Initialization Hang**: Fixed JSON-RPC compliance by preventing `null` fields in response objects.
+- **Portability**: Updated `gemini-extension.json` to use `${extensionPath}` for global compatibility.
 
-## [1.1.0] - 2026-01-25
+### Added
+
+- **Documentation**: Added architecture diagram and real-world session trace (`examples/gemini_session_trace.md`).
+
+## [1.1.1] - 2026-01-25
 
 ### Added
 
