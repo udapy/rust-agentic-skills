@@ -8,11 +8,13 @@
 
 **A modular, constraint-based skill set for Autonomous AI coding agents.**
 
-This repository transforms any general-purpose LLM (Claude, Gemini, GPT-4) into a **disciplined Rust engineering team**. It adheres to the **Agent Context Protocol (ACP)** to provide self-describing skills that explicitly define their triggers, capabilities, and execution phases.
+This repository transforms any general-purpose LLM (Claude, Gemini) into a **disciplined Rust engineering team**. It adheres to the **Agent Context Protocol (ACP)** to provide self-describing skills that explicitly define their triggers, capabilities, and execution phases.
 
 ---
 
 ## // Architecture Overview
+
+![Architecture Diagram](assets/rust-agentic-skill-architecture.png)
 
 We do not use monolithic instruction files. Instead, every skill in `skills/` follows the **Brain-Tool-Context** architecture to maximize token efficiency:
 
@@ -58,8 +60,10 @@ Compatible with the Gemini CLI tool via the **Model Context Protocol (MCP)**. Th
 You can run the server directly to verify standard JSON-RPC communication:
 
 ```bash
-cargo run --release --bin rust-agentic-skills
+./bootstrap.sh
 ```
+
+_(Or `cargo run --release` if you prefer manual builds)_
 
 _(Expects JSON-RPC messages on stdin)_
 
@@ -67,6 +71,14 @@ For generic agents (ChatGPT, heavily customized setups):
 
 1.  **System Prompt**: Load [AGENTS.md](AGENTS.md) as your system instruction. It defines the **RPI (Research → Plan → Implement)** loop.
 2.  **Context Loading**: When the agent enters a specific phase (e.g., "Verification"), manually load the relevant `SKILL.md` (e.g., `skills/lint-hunter/SKILL.md`).
+
+---
+
+## // See it in Action
+
+Want to see what a full session looks like?
+
+- **[See Example Trace](examples/gemini_session_trace.md)**: A real-world interaction log showing the agent initializing a project, running commands, and validating outputs.
 
 ---
 

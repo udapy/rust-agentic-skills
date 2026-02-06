@@ -1,16 +1,18 @@
 {
   "name": "rust-agentic-skills",
   "id": "rust-agentic-skills",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "A 'Rust Guardian' agent that enforces memory safety and coding standards.",
   "publisher": "udapy", 
   "mcpServers": {
     "rust-guardian": {
-      "command": "cargo",
-      "args": ["run", "--release", "--bin", "rust-agentic-skills", "--quiet"],
+      "command": "bash",
+      "args": ["${extensionPath}${/}bootstrap.sh"],
+      "cwd": "${extensionPath}",
       "env": {
-        "RUST_LOG": "error"
+        "PATH": "${extensionPath}:${PATH}"
       },
+
       "capabilities": {
         "resources": { "list": true, "read": true },
         "tools": { "list": true, "call": true },

@@ -15,3 +15,5 @@ Cargo.lock
 
 # Temporary binary from generation script
 generate_agents_md
+
+.local_demo_gemini.sh

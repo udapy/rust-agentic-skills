@@ -1,11 +1,13 @@
 mod skills;
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
-use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+use serde_json::{Value, json};
 use skills::{Skill, load_skills};
 use std::env;
 use std::process::Stdio;
+use log::{info, error, warn};
+use env_logger::Env;
+use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::process::Command;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -20,21 +22,32 @@ struct JsonRpcRequest {
 struct JsonRpcResponse {
     jsonrpc: String,
     id: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     result: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     error: Option<Value>,
 }
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    eprintln!("Starting Rust Agentic Skills MCP Server...");
+    // Initialize logger to write to stderr (default), but strictly ensure it doesn't touch stdout
+    env_logger::Builder::from_env(Env::default().default_filter_or("info"))
+        .target(env_logger::Target::Stderr)
+        .init();
+
+    info!("Starting Rust Agentic Skills MCP Server...");
 
     // Load Skills dynamically
     let current_dir = env::current_dir()?;
     let skills = load_skills(&current_dir).unwrap_or_else(|e| {
-        eprintln!("Warning: Failed to load skills: {}", e);
+        warn!("Failed to load skills: {}", e);
         Vec::new()
     });
-    eprintln!("Loaded {} skills: {:?}", skills.len(), skills.iter().map(|s| &s.name).collect::<Vec<_>>());
+    info!(
+        "Loaded {} skills: {:?}",
+        skills.len(),
+        skills.iter().map(|s| &s.name).collect::<Vec<_>>()
+    );
 
     let stdin = tokio::io::stdin();
     let reader = BufReader::new(stdin);
@@ -50,13 +63,13 @@ async fn main() -> anyhow::Result<()> {
         let req: JsonRpcRequest = match serde_json::from_str(&line) {
             Ok(r) => r,
             Err(e) => {
-                eprintln!("Failed to parse request: {} | Line: {}", e, line);
+                error!("Failed to parse request: {} | Line: {}", e, line);
                 continue;
             }
         };
 
         let response = handle_request(req, &skills).await;
-        
+
         if let Some(resp) = response {
             let mut resp_str = serde_json::to_string(&resp)?;
             resp_str.push('\n');
@@ -85,8 +98,10 @@ async fn handle_request(req: JsonRpcRequest, skills: &[Skill]) -> Option<JsonRpc
                     "version": "1.0.0"
                 }
             })
-        },
-        "notifications/initialized" => { return None; },
+        }
+        "notifications/initialized" => {
+            return None;
+        }
         "tools/list" => {
             let tools: Vec<Value> = skills.iter().map(|s| {
                 json!({
@@ -103,13 +118,11 @@ async fn handle_request(req: JsonRpcRequest, skills: &[Skill]) -> Option<JsonRpc
             }).collect();
 
             json!({ "tools": tools })
-        },
-        "tools/call" => {
-            handle_tool_call(req.params, skills).await
-        },
+        }
+        "tools/call" => handle_tool_call(req.params, skills).await,
         "ping" => json!({}),
         _ => {
-            eprintln!("Unknown method: {}", method);
+            warn!("Unknown method: {}", method);
             return Some(JsonRpcResponse {
                 jsonrpc: "2.0".to_string(),
                 id,
@@ -137,13 +150,13 @@ async fn handle_tool_call(params: Option<Value>, skills: &[Skill]) -> Value {
         // Look for scripts
         let scripts_dir = skill.path.join("scripts");
         if scripts_dir.exists() {
-             // Heuristic: Try to find a logical script.
-             // For now, we just list files and try to run specific known ones or just return info.
-             // For issue fix completeness, we will try to run `explain_error.sh` if it is Lint Hunter
-             if name == "lint_hunter" {
-                 let script_path = scripts_dir.join("explain_error.sh");
-                 if script_path.exists() {
-                     let output = Command::new("sh")
+            // Heuristic: Try to find a logical script.
+            // For now, we just list files and try to run specific known ones or just return info.
+            // For issue fix completeness, we will try to run `explain_error.sh` if it is Lint Hunter
+            if name == "lint_hunter" {
+                let script_path = scripts_dir.join("explain_error.sh");
+                if script_path.exists() {
+                    let output = Command::new("sh")
                         .arg(&script_path)
                         .arg(args_str)
                         .stdout(Stdio::piped())
@@ -151,19 +164,21 @@ async fn handle_tool_call(params: Option<Value>, skills: &[Skill]) -> Value {
                         .stdin(Stdio::null())
                         .output()
                         .await;
-                    
-                     match output {
-                         Ok(o) => {
-                             let stdout = String::from_utf8_lossy(&o.stdout);
-                             let stderr = String::from_utf8_lossy(&o.stderr);
-                             return json!({ "content": [{ "type": "text", "text": format!("{}\n{}", stdout, stderr) }] });
-                         },
-                         Err(e) => return json!({ "content": [{ "type": "text", "text": format!("Failed to execute script: {}", e) }], "isError": true })
-                     }
-                 }
-             }
+
+                    match output {
+                        Ok(o) => {
+                            let stdout = String::from_utf8_lossy(&o.stdout);
+                            let stderr = String::from_utf8_lossy(&o.stderr);
+                            return json!({ "content": [{ "type": "text", "text": format!("{}\n{}", stdout, stderr) }] });
+                        }
+                        Err(e) => {
+                            return json!({ "content": [{ "type": "text", "text": format!("Failed to execute script: {}", e) }], "isError": true });
+                        }
+                    }
+                }
+            }
         }
-    
+
         // Default response for skills without executable scripts in this MVP
         json!({
             "content": [
@@ -173,7 +188,6 @@ async fn handle_tool_call(params: Option<Value>, skills: &[Skill]) -> Value {
                 }
             ]
         })
-
     } else {
         json!({
             "content": [{ "type": "text", "text": format!("Tool not found: {}", name) }],
