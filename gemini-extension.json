@@ -6,8 +6,8 @@
   "publisher": "udapy", 
   "mcpServers": {
     "rust-guardian": {
-      "command": "bash",
-      "args": ["run_rust_guardian.sh"],
+      "command": "/Users/uday/ml-workspace/rust-agentic-skills/bootstrap.sh",
+      "args": [],
 
       "capabilities": {
         "resources": { "list": true, "read": true },

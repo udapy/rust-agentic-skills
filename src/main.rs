@@ -5,6 +5,8 @@ use serde_json::{Value, json};
 use skills::{Skill, load_skills};
 use std::env;
 use std::process::Stdio;
+use log::{info, error, warn};
+use env_logger::Env;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::process::Command;
 
@@ -20,21 +22,28 @@ struct JsonRpcRequest {
 struct JsonRpcResponse {
     jsonrpc: String,
     id: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     result: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     error: Option<Value>,
 }
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    eprintln!("Starting Rust Agentic Skills MCP Server...");
+    // Initialize logger to write to stderr (default), but strictly ensure it doesn't touch stdout
+    env_logger::Builder::from_env(Env::default().default_filter_or("info"))
+        .target(env_logger::Target::Stderr)
+        .init();
+
+    info!("Starting Rust Agentic Skills MCP Server...");
 
     // Load Skills dynamically
     let current_dir = env::current_dir()?;
     let skills = load_skills(&current_dir).unwrap_or_else(|e| {
-        eprintln!("Warning: Failed to load skills: {}", e);
+        warn!("Failed to load skills: {}", e);
         Vec::new()
     });
-    eprintln!(
+    info!(
         "Loaded {} skills: {:?}",
         skills.len(),
         skills.iter().map(|s| &s.name).collect::<Vec<_>>()
@@ -54,7 +63,7 @@ async fn main() -> anyhow::Result<()> {
         let req: JsonRpcRequest = match serde_json::from_str(&line) {
             Ok(r) => r,
             Err(e) => {
-                eprintln!("Failed to parse request: {} | Line: {}", e, line);
+                error!("Failed to parse request: {} | Line: {}", e, line);
                 continue;
             }
         };
@@ -113,7 +122,7 @@ async fn handle_request(req: JsonRpcRequest, skills: &[Skill]) -> Option<JsonRpc
         "tools/call" => handle_tool_call(req.params, skills).await,
         "ping" => json!({}),
         _ => {
-            eprintln!("Unknown method: {}", method);
+            warn!("Unknown method: {}", method);
             return Some(JsonRpcResponse {
                 jsonrpc: "2.0".to_string(),
                 id,
