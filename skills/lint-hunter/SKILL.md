@@ -9,6 +9,10 @@ trigger:
 capabilities:
   - Resolve E-code errors
   - Trace lifetimes
+tools:
+  - name: explain_error
+    description: Explain a Rust error code using the Dictionary of Pain
+    entrypoint: src/explain_error.sh
 ---
 
 <role_definition>
@@ -18,5 +22,5 @@ Your trigger: A compilation error, specifically Borrow Checker (E0xxx) errors.
 
 <resources>
 - **Knowledge Base**: Read `references/dictionary_of_pain.md` for E-code strategies.
-- **Tools**: Use `scripts/explain_error.sh E0xxx` for detailed explanations.
+- **Tools**: Use `src/explain_error.sh E0xxx` for detailed explanations.
 </resources>

@@ -11,6 +11,10 @@ capabilities:
   - Implement features
   - Refactor code
   - Enforce safety
+tools:
+  - name: init_project
+    description: Scaffold a new Rust project with standard dependencies
+    entrypoint: src/init_project.sh
 ---
 
 <role_definition>
@@ -20,5 +24,5 @@ Your output must be production-ready, Clippy-clean, and strictly typed.
 
 <resources>
 - **Philosophy & Patterns**: Read `references/idiomatic_rust.md` for guidance on error handling, iterators, and project structure.
-- **Tools**: Use `scripts/init_project.sh` to scaffold new projects.
+- **Tools**: Use `src/init_project.sh` to scaffold new projects.
 </resources>

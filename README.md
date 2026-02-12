@@ -5,6 +5,7 @@
 [![Claude Ready](https://img.shields.io/badge/Claude-Plugin-purple)](.Claude-plugin/marketplace.json)
 [![Gemini Extension](https://img.shields.io/badge/Gemini-Extension-blue)](gemini-extension.json)
 [![Antigravity Compatible](https://img.shields.io/badge/Antigravity-Engine-green)](AGENTS.md)
+[![Install with Skills.sh](https://img.shields.io/badge/Install_with-skills.sh-000000?style=for-the-badge)](https://skills.sh)
 
 **A modular, constraint-based skill set for Autonomous AI coding agents.**
 
