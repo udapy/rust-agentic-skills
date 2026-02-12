@@ -1,0 +1,61 @@
+{
+  "version": "1",
+  "skills": [
+    {
+      "id": "rust-core",
+      "name": "Rust Core Specialist",
+      "description": "Implementing idiomatic, safe, and performant Rust code.",
+      "path": "skills/rust-core",
+      "entrypoint": "skills/rust-core/SKILL.md"
+    },
+    {
+      "id": "lint-hunter",
+      "name": "Lint Hunter",
+      "description": "Debugging compiler errors and tracing lifetimes.",
+      "path": "skills/lint-hunter",
+      "entrypoint": "skills/lint-hunter/SKILL.md"
+    },
+    {
+      "id": "pest-specialist",
+      "name": "Pest Specialist",
+      "description": "Generating PEG parsers with pest.",
+      "path": "skills/pest-specialist",
+      "entrypoint": "skills/pest-specialist/SKILL.md"
+    },
+    {
+      "id": "ron-specialist",
+      "name": "RON Specialist",
+      "description": "Configuring applications with Rusty Object Notation.",
+      "path": "skills/ron-specialist",
+      "entrypoint": "skills/ron-specialist/SKILL.md"
+    },
+    {
+      "id": "general-debug",
+      "name": "General Debugger",
+      "description": "General debugging strategies for Rust.",
+      "path": "skills/general-debug",
+      "entrypoint": "skills/general-debug/SKILL.md"
+    },
+    {
+      "id": "general-security",
+      "name": "Security Specialist",
+      "description": "Auditing code for security vulnerabilities.",
+      "path": "skills/general-security",
+      "entrypoint": "skills/general-security/SKILL.md"
+    },
+    {
+      "id": "general-syntax",
+      "name": "Syntax Guide",
+      "description": "Reference for Rust syntax.",
+      "path": "skills/general-syntax",
+      "entrypoint": "skills/general-syntax/SKILL.md"
+    },
+    {
+      "id": "router",
+      "name": "Agent Router",
+      "description": "Analyzing user intent and delegating tasks.",
+      "path": "skills/router",
+      "entrypoint": "skills/router/SKILL.md"
+    }
+  ]
+}
